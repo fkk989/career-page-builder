@@ -18,14 +18,14 @@ model User {
 }
 
 model Company {
-  id            String   @id @default(uuid())
-  name          String   @unique()
-  logo          String?
-  banner        String?
-  culture_video String?
-  themeColor    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt()
+  id         String   @id @default(uuid())
+  name       String
+  slug       String   @unique
+  logo       String?
+  banner     String?
+  themeColor String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])

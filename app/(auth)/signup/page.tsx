@@ -2,28 +2,22 @@
 
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-
-type LoginFormValues = {
-    company: string
-    email: string;
-    password: string;
-};
+import { SignupPayload, useSignup } from "@/hooks/useSignup";
 
 export default function SignupPage() {
     const [loading, setLoading] = useState(false);
-
+    const { mutateAsync: signup, } = useSignup()
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<LoginFormValues>();
+    } = useForm<SignupPayload>();
 
-    const onSubmit = async (data: LoginFormValues) => {
+    const onSubmit = async (data: SignupPayload) => {
         setLoading(true);
 
         try {
-
-
+            await signup(data)
         } catch (err) {
             console.error(err);
         } finally {
@@ -48,8 +42,23 @@ export default function SignupPage() {
                             className="w-full border rounded-md px-3 py-2"
                             placeholder="Your company name"
                         />
-                        {errors.email && (
+                        {errors.company && (
                             <p className="text-red-500 text-sm mt-1">{errors.company?.message}</p>
+                        )}
+                    </div>
+                    {/* name */}
+                    <div>
+                        <label className="block text-sm mb-1">Name</label>
+                        <input
+                            type="=text"
+                            {...register("name", {
+                                required: "Name is required"
+                            })}
+                            className="w-full border rounded-md px-3 py-2"
+                            placeholder="Your name"
+                        />
+                        {errors.name && (
+                            <p className="text-red-500 text-sm mt-1">{errors.name?.message}</p>
                         )}
                     </div>
                     {/* Email */}
@@ -89,6 +98,7 @@ export default function SignupPage() {
 
                     {/* Submit */}
                     <button
+                        type="submit"
                         disabled={loading}
                         className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition"
                     >

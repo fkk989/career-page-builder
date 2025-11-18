@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -41,4 +41,24 @@ export function createJWT(payload: TokenProps) {
   const token = jwt.sign(payload, process.env.JWT_SECRET);
 
   return token;
+}
+
+export function verifyJWT(token: string) {
+  try {
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not set in environment variables");
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return decoded as TokenProps;
+  } catch (error) {
+    console.log("Invalid token: ", error);
+    return null;
+  }
+}
+
+export function getTokenFromHeader(req: NextRequest) {
+  const auth = req.headers.get("authorization");
+  if (!auth || !auth.startsWith("Bearer ")) return null;
+  return auth.split(" ")[1];
 }

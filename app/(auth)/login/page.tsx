@@ -3,27 +3,22 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-type LoginFormValues = {
-    email: string;
-    password: string;
-};
+import { LoginPayload, useLogin } from "@/hooks/useLogin";
 
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const navigate = useRouter()
+    const { mutateAsync: login, isPending, error } = useLogin();
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<LoginFormValues>();
+    } = useForm<LoginPayload>();
 
-    const onSubmit = async (data: LoginFormValues) => {
+    const onSubmit = async (data: LoginPayload) => {
         setLoading(true);
-
         try {
-
-
+            await login(data)
         } catch (err) {
             console.error(err);
         } finally {
@@ -74,6 +69,7 @@ export default function LoginPage() {
 
                     {/* Submit */}
                     <button
+                      type="submit"
                         disabled={loading}
                         className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition"
                     >

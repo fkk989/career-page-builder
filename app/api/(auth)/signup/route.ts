@@ -3,6 +3,7 @@ import { prisma } from "@/lib/clients/db-client";
 import { userSignupSchema } from "@/lib/validations/user";
 import { createJWT, generateResponse, hashPassword } from "@/lib/utils";
 import { z } from "zod";
+import { generateAvailableSlug } from "@/lib/slug-generator";
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,24 +33,34 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Hashing password
     const hashedPassword = await hashPassword(password);
 
-    // Creating user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    });
+    const { user, company } = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+        },
+      });
 
-    // creating company
-    const company = await prisma.company.create({
-      data: {
-        name: companyName,
-        userId: user.id,
-      },
+      const company_slug = await generateAvailableSlug(
+        companyName,
+        async (slug) => {
+          const exists = await tx.company.findUnique({ where: { slug } });
+          return exists !== null;
+        }
+      );
+
+      const company = await tx.company.create({
+        data: {
+          name: companyName,
+          userId: user.id,
+          slug: company_slug,
+        },
+      });
+
+      return { user, company };
     });
 
     const token = createJWT({
