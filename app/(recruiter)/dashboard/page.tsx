@@ -36,8 +36,8 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto py-10">
-            <h1 className="text-4xl font-bold mb-8">Company Settings</h1>
+        <div className="w-[95%] md:max-w-3xl mx-auto py-10">
+            <h1 className="text-2xl md:text-4xl font-bold mb-8">Company Details</h1>
 
             <form
                 onSubmit={handleSubmit(onSubmit)}
@@ -65,7 +65,7 @@ export default function DashboardPage() {
                             <img
                                 src={logo}
                                 alt="Logo"
-                                className="w-[160px] h-[50px] object-contain border rounded-lg bg-gray-50 p-2"
+                                className="w-40 h-[50px] object-contain border rounded-lg bg-gray-50 p-2"
                             />
                             <button
                                 type="button"
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-black text-white px-6 py-3 rounded-lg text-lg font-medium hover:bg-black/90 disabled:opacity-60"
+                    className="bg-black text-white px-3 py-1.5 md:px-6 md:py-3 rounded-lg text-lg font-medium hover:bg-black/90 disabled:opacity-60 max-sm:text-lg"
                 >
                     {isSubmitting ? "Saving..." : "Save Changes"}
                 </button>

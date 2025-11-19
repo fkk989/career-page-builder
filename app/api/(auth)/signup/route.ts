@@ -4,6 +4,7 @@ import { userSignupSchema } from "@/lib/validations/user";
 import { createJWT, generateResponse, hashPassword } from "@/lib/utils";
 import { z } from "zod";
 import { generateAvailableSlug } from "@/lib/slug-generator";
+import { defaultSection, jobsData } from "@/lib/constants";
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,6 +59,25 @@ export async function POST(req: NextRequest) {
           userId: user.id,
           slug: company_slug,
         },
+      });
+
+      const defaultSectionData = defaultSection.map((data) => ({
+        ...data,
+        companyId: company.id,
+      }));
+
+      const sections = await tx.section.createMany({
+        data: defaultSectionData,
+      });
+
+      // just adding some sample job for diplaying pourpose
+      const jobsSampleData = jobsData.map((data) => ({
+        ...data,
+        companyId: company.id,
+      }));
+
+      await tx.job.createMany({
+        data: jobsSampleData,
       });
 
       return { user, company };

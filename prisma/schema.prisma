@@ -29,4 +29,37 @@ model Company {
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
+
+  jobs           Job[]
+  careerSections Section[]
+}
+
+model Section {
+  id        String   @id @default(uuid())
+  type      String
+  order     Int
+  content   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+}
+
+model Job {
+  id               String   @id @default(uuid())
+  title            String
+  work_policy      String?
+  location         String?
+  department       String?
+  employment_type  String?
+  experience_level String?
+  job_type         String?
+  salary_range     String?
+  job_slug         String?
+  postedAt         DateTime @default(now())
+  updatedAt        DateTime @updatedAt()
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
 }

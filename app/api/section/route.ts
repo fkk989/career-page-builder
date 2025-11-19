@@ -1,8 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/clients/db-client";
 import { generateResponse, getTokenFromHeader, verifyJWT } from "@/lib/utils";
-import { companySchema } from "@/lib/validations/company";
-import { z } from "zod";
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,11 +22,11 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const company = await prisma.company.findUnique({
-      where: { id: decodedToken.company },
+    const sections = await prisma.section.findMany({
+      where: { companyId: decodedToken.company },
     });
 
-    if (!company) {
+    if (!sections) {
       return generateResponse(404, {
         success: false,
         message: "Company not found",
@@ -37,7 +35,7 @@ export async function GET(req: NextRequest) {
 
     return generateResponse(200, {
       success: true,
-      data: company,
+      data: sections,
     });
   } catch (err) {
     console.error(err);
@@ -50,8 +48,8 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
+    // 1. Auth
     const token = getTokenFromHeader(req);
-
     if (!token) {
       return generateResponse(401, {
         success: false,
@@ -59,34 +57,60 @@ export async function PUT(req: NextRequest) {
       });
     }
 
-    const decodedToken = verifyJWT(token);
-    if (!decodedToken) {
+    const decoded: any = verifyJWT(token);
+    if (!decoded?.userId) {
       return generateResponse(401, {
         success: false,
         message: "Unauthorized",
       });
     }
 
-    const body = await req.json();
-    const parsed = companySchema.safeParse(body);
+    const userId = decoded.userId;
 
-    if (!parsed.success) {
+    // 2. Get sections from request body
+    const { sections } = await req.json();
+
+    if (!Array.isArray(sections)) {
       return generateResponse(400, {
         success: false,
-        message: "Validation fildes",
-        errors: z.treeifyError(parsed.error),
+        message: "Sections must be an array",
       });
     }
 
-    const updated = await prisma.company.update({
-      where: { id: decodedToken.company },
-      data: parsed.data,
+    // 3. Get company of this user
+    const company = await prisma.company.findUnique({
+      where: { userId },
     });
+
+    if (!company) {
+      return generateResponse(404, {
+        success: false,
+        message: "Company not found",
+      });
+    }
+
+    await prisma.section.deleteMany({
+      where: { companyId: company.id },
+    });
+
+    // 5. Insert new sections with correct order
+    const createdSections = await prisma.$transaction(
+      sections.map((section, index) =>
+        prisma.section.create({
+          data: {
+            type: section.type,
+            content: section.content || {},
+            order: index,
+            companyId: company.id,
+          },
+        })
+      )
+    );
 
     return generateResponse(200, {
       success: true,
-      message: "Company details updated",
-      data: updated,
+      message: "Sections updated successfully",
+      data: createdSections,
     });
   } catch (err) {
     console.error(err);

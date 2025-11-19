@@ -27,3 +27,22 @@ export function useCompany() {
     },
   });
 }
+
+export function useCompanyPublic({ company_slug }: { company_slug: string }) {
+  return useQuery({
+    queryKey: ["company-public"],
+    queryFn: async () => {
+      try {
+        const res = await fetch(`/api/company/${company_slug}`);
+
+        if (!res.ok) throw new Error("Failed to fetch company");
+
+        const data = await res.json();
+
+        return data.data as CompanyInput & { id: string; slug: string };
+      } catch (error) {
+        console.log("Error fetching company: ", error);
+      }
+    },
+  });
+}

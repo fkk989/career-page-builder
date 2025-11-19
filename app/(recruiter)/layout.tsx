@@ -7,7 +7,7 @@ export default function RecruiterLayout({ children }: { children: React.ReactNod
             <div className="min-h-screen">
                 <Navbar />
                 {/* Page content */}
-                <main className="p-6">
+                <main className="md:p-6">
                     {children}
                 </main>
             </div>
