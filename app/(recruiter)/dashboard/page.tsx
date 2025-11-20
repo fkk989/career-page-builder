@@ -14,18 +14,18 @@ export default function DashboardPage() {
         reset,
         setValue,
         watch,
-        formState: { isSubmitting },
+        formState: { isSubmitting, isLoading },
     } = useForm<CompanyInput>();
 
     const logo = watch("logo");
     const banner = watch("banner");
 
-    const { data } = useCompany();
+    const { data: Company } = useCompany();
     const { mutateAsync } = useUpdateCompany()
 
     useEffect(() => {
-        if (data) reset(data);
-    }, [data]);
+        if (Company) reset(Company);
+    }, [Company]);
 
     async function onSubmit(values: CompanyInput) {
         try {
@@ -37,8 +37,18 @@ export default function DashboardPage() {
 
     return (
         <div className="w-[95%] md:max-w-3xl mx-auto py-10">
-            <h1 className="text-2xl md:text-4xl font-bold mb-8">Company Details</h1>
-
+            <h1 className="text-2xl md:text-4xl font-bold mb-4">Company Details</h1>
+            <button className="my-3 text-sm md:text-lg">Career page link: <span
+                onClick={async (e) => {
+                    try {
+                        await navigator.clipboard.writeText(`${window.location.origin}/${Company?.slug}/careers`)
+                        alert("Link copied")
+                    } catch (error) {
+                        alert("Failed to copy link")
+                    }
+                }}
+                className="text-blue-500 hover:text-blue-400 cursor-pointer">
+                {`${window.location.origin}/${Company?.slug}/careers`}</span></button>
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="space-y-8 bg-white p-8 rounded-xl shadow-sm border"
@@ -144,7 +154,7 @@ export default function DashboardPage() {
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-black text-white px-3 py-1.5 md:px-6 md:py-3 rounded-lg text-lg font-medium hover:bg-black/90 disabled:opacity-60 max-sm:text-lg"
+                    className="bg-black text-white px-3 py-1.5 md:px-6 md:py-3 rounded-lg text-lg font-medium hover:bg-black/90 disabled:opacity-60 max-sm:text-lg cursor-pointer"
                 >
                     {isSubmitting ? "Saving..." : "Save Changes"}
                 </button>

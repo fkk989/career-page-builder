@@ -5,17 +5,19 @@ import { sectionStorage } from "@/lib/localStorage";
 import SectionPreviewRenderer from "@/components/sections/SectionPreviewRenderer";
 import { useCompany, useCompanyPublic } from "@/hooks/useCompany";
 import { useParams, useRouter } from "next/navigation";
+import { Section } from "@prisma/client";
 
 export default function PreviewPage() {
-    const [sections, setSections] = useState<any[]>([]);
+    const [sections, setSections] = useState<Section[]>([]);
     const { company: company_slug } = useParams();
 
     const { data: company } = useCompanyPublic({ company_slug: company_slug as string });
 
     useEffect(() => {
-        const stored = sectionStorage.getSections();
-        if (stored) setSections(stored);
-    }, []);
+        if (company && company.careerSections.length) {
+            setSections(company.careerSections)
+        }
+    }, [company]);
 
     if (!company)
         return (
@@ -37,7 +39,7 @@ export default function PreviewPage() {
                     />
                 </div>
             )}
-            <div className="w-[50%] flex flex-col items-center mt-5 gap-5">
+            <div className="w-[95%] md:w-[50%] flex flex-col items-center mt-5 gap-5">
                 {/* Company Header */}
                 <header className="  shadow-sm flex items-center gap-4">
                     {company.logo && (

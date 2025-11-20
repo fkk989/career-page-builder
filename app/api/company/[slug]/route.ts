@@ -10,6 +10,15 @@ export async function GET(
 
     const company = await prisma.company.findUnique({
       where: { slug },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        logo: true,
+        banner: true,
+        themeColor: true,
+        careerSections: true,
+      },
     });
 
     if (!company) {

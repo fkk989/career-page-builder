@@ -80,12 +80,11 @@ export default function JobSectionPreview() {
                                 <p><b>Salary:</b> {job.salary_range}</p>
                             </div>
 
-                            <a
-                                href={`/job/${job.job_slug}`}
-                                className="text-blue-600 text-sm mt-2 inline-block hover:underline"
+                            <p
+                                className="text-blue-600 text-sm mt-2 inline-block hover:underline cursor-pointer"
                             >
                                 View Details →
-                            </a>
+                            </p>
                         </div>
                     ))}
                 </div>

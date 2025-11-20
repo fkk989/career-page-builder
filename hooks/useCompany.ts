@@ -1,5 +1,6 @@
 import { authStorage } from "@/lib/localStorage";
 import { CompanyInput } from "@/lib/validations/company";
+import { Section } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
 export function useCompany() {
@@ -39,7 +40,11 @@ export function useCompanyPublic({ company_slug }: { company_slug: string }) {
 
         const data = await res.json();
 
-        return data.data as CompanyInput & { id: string; slug: string };
+        return data.data as CompanyInput & {
+          id: string;
+          slug: string;
+          careerSections: Section[];
+        };
       } catch (error) {
         console.log("Error fetching company: ", error);
       }

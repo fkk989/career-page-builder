@@ -38,7 +38,7 @@ export default function PreviewPage() {
                     onClick={async () => {
                         try {
                             await mutateAsync(sections)
-                            navigate.push(`/${company.slug}/careers`)
+                            navigate.push("/dashboard")
                         } catch (error) {
                             console.log("Error publising sections: ", error)
                         }
@@ -59,7 +59,7 @@ export default function PreviewPage() {
                         />
                     </div>
                 )}
-                <div className="w-[80%] md:w-[50%] flex flex-col items-center mt-5">
+                <div className="w-[95%] md:w-[50%] flex flex-col items-center mt-5">
                     {/* Company Header */}
                     <header className="  shadow-sm flex items-center gap-4">
                         {company.logo && (
