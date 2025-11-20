@@ -21,7 +21,7 @@ export default function DashboardPage() {
     const banner = watch("banner");
 
     const { data: Company } = useCompany();
-    const { mutateAsync } = useUpdateCompany()
+    const { mutateAsync, isPending } = useUpdateCompany()
 
     useEffect(() => {
         if (Company) reset(Company);
@@ -156,7 +156,7 @@ export default function DashboardPage() {
                     disabled={isSubmitting}
                     className="bg-black text-white px-3 py-1.5 md:px-6 md:py-3 rounded-lg text-lg font-medium hover:bg-black/90 disabled:opacity-60 max-sm:text-lg cursor-pointer"
                 >
-                    {isSubmitting ? "Saving..." : "Save Changes"}
+                    {isPending ? "Saving..." : "Save Changes"}
                 </button>
             </form>
         </div>

@@ -3,9 +3,11 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { SignupPayload, useSignup } from "@/hooks/useSignup";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
     const [loading, setLoading] = useState(false);
+    const navigate = useRouter()
     const { mutateAsync: signup, } = useSignup()
     const {
         register,
@@ -105,6 +107,11 @@ export default function SignupPage() {
                         {loading ? "Signin Up..." : "Sign Up"}
                     </button>
                 </form>
+                <div className="w-full flex items-center justify-end mt-2.5">
+                    <button onClick={() => {
+                        navigate.push("/login")
+                    }} className="hover:underline">Already have an account? <span className="text-blue-600 hover:text-blue-500">Log In</span></button>
+                </div>
             </div>
         </main>
     );
